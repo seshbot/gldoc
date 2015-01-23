@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/application.css" rel="stylesheet">
+
+  <meta charset=utf-8 />
+  <title>OpenGL docs</title>
+</head>
+<body>
+  <script type="text/x-handlebars" data-template-name="home">
+    <nav>
+      <header>
+      API [1.0 2.0 ES 3.0 ES 4.0]
+      </header>
+
+      <div>grps {{outlet grps}}</div>
+      <div>cmds {{outlet cmds}}</div>
+
+      Groups:
+      <ul>
+        {{#each entity in controller.groups}}
+        <li>{{#link-to "group" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
+        {{/each}}
+      </ul>
+
+      Commands:
+      <ul>
+        {{#each entity in controller.commands}}
+        <li>{{#link-to "command" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
+        {{/each}}
+      </ul>
+    </nav>
+
+    <div>
+      {{outlet}}
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="home/index">
+    home index - select something...
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="group">
+    Group {{name}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="command">
+    Command {{name}}
+  </script>
+
+  <script src="js/libs/jquery-1.11.1.min.js"></script>
+  <script src="js/libs/bootstrap.min.js"></script>
+  <script src="js/libs/handlebars-v1.3.0.js"></script>
+  <script src="js/libs/ember-1.8.1.js"></script>
+  <script src="js/libs/ember-data-1.0b.js"></script>
+
+  <script src="js/application.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/models.js"></script>
+</body>
+</html>
