@@ -11,7 +11,7 @@
   <script type="text/x-handlebars">
     <nav>
       <header>
-      API [1.0 2.0 ES 3.0 ES 4.0]
+      {{render 'features' controller.features}}
       </header>
 
       <div>{{render 'groups' controller.groups}}</div>
@@ -27,10 +27,20 @@
     home index - select something...
   </script>
 
+  <script type="text/x-handlebars" data-template-name="features">
+    <div class="btn-group btn-group-xs" role="group" aria-label="APIs">
+      {{#each entity in controller itemController='feature'}}
+        <button {{bind-attr class=':btn :btn-sm entity.isActive:btn-primary:btn-default'}} {{action 'toggle'}}>
+          {{entity.api}} {{entity.number}}
+        </button>
+      {{/each}}
+    </div>
+  </script>
+
   <script type="text/x-handlebars" data-template-name="groups">
     Groups:
     <ul>
-        {{#each entity in controller.filtered}}
+        {{#each entity in controller.filteredContent}}
         <li>{{#link-to "group" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
         {{/each}}
     </ul>
