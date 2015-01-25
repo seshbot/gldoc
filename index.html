@@ -8,28 +8,14 @@
   <title>OpenGL docs</title>
 </head>
 <body>
-  <script type="text/x-handlebars" data-template-name="home">
+  <script type="text/x-handlebars">
     <nav>
       <header>
       API [1.0 2.0 ES 3.0 ES 4.0]
       </header>
 
-      <div>grps {{outlet grps}}</div>
-      <div>cmds {{outlet cmds}}</div>
-
-      Groups:
-      <ul>
-        {{#each entity in controller.groups}}
-        <li>{{#link-to "group" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
-        {{/each}}
-      </ul>
-
-      Commands:
-      <ul>
-        {{#each entity in controller.commands}}
-        <li>{{#link-to "command" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
-        {{/each}}
-      </ul>
+      <div>{{render 'groups' controller.groups}}</div>
+      <div>{{render 'commands' controller.commands}}</div>
     </nav>
 
     <div>
@@ -37,8 +23,26 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="home/index">
+  <script type="text/x-handlebars" data-template-name="index">
     home index - select something...
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="groups">
+    Groups:
+    <ul>
+        {{#each entity in controller.filtered}}
+        <li>{{#link-to "group" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
+        {{/each}}
+    </ul>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="commands">
+      Commands:
+      <ul>
+        {{#each entity in controller.filtered}}
+        <li>{{#link-to "command" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
+        {{/each}}
+      </ul>
   </script>
 
   <script type="text/x-handlebars" data-template-name="group">
