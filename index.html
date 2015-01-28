@@ -30,7 +30,7 @@
   <script type="text/x-handlebars" data-template-name="features">
     <div class="btn-group btn-group-xs" role="group" aria-label="APIs">
       {{#each entity in controller itemController='feature'}}
-        <button {{bind-attr class=':btn :btn-sm entity.isActive:btn-primary:btn-default'}} {{action 'toggle'}}>
+        <button {{bind-attr class=':btn :btn-sm entity.isActive:btn-primary:btn-default'}} {{action 'toggle' entity}}>
           {{entity.api}} {{entity.number}}
         </button>
       {{/each}}
@@ -49,7 +49,7 @@
   <script type="text/x-handlebars" data-template-name="commands">
       Commands:
       <ul>
-        {{#each entity in controller.filtered}}
+        {{#each entity in controller.filteredContent}}
         <li>{{#link-to "command" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
         {{/each}}
       </ul>
@@ -72,5 +72,14 @@
   <script src="js/application.js"></script>
   <script src="js/router.js"></script>
   <script src="js/models.js"></script>
+
+  <script src="assets/registry/features.js"></script>
+  <script src="assets/registry/groups.js"></script>
+  <script src="assets/registry/commands.js"></script>
+  <script>
+    App.Feature.FIXTURES = GL_REGISTRY_FEATURES;
+    App.Group.FIXTURES = GL_REGISTRY_GROUPS;
+    App.Command.FIXTURES = GL_REGISTRY_COMMANDS;
+  </script>
 </body>
 </html>

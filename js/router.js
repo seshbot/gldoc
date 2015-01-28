@@ -3,6 +3,43 @@ App.Router.map(function() {
   this.resource('command', { path: '/commands/:command_id' });
 });
 
+App.Filter = Ember.Object.extend({
+  searchString: '',
+  features: [],
+  setSearchString: function(s) {
+    console.log('setting search string', s);
+    this.set('searchString', s);
+  },
+  setFeature: function(f, shouldSet) {
+    var featureId = f.get('id');
+    var features = this.get('features');
+    if (shouldSet && !features.contains(featureId)) {
+      console.log('setting feature', featureId);
+      features.pushObject(featureId);
+    }
+    if (!shouldSet && features.contains(featureId)) {
+      console.log('removing feature', featureId);
+      features.removeObject(featureId);
+    }
+  },
+  testGroup: function(g) {
+    var features = this.get('features');
+    var hasActiveFeatures = function(f) { return features.contains(f.get('id')); };
+
+    var groupFeatures = g.get('features');
+    return groupFeatures.any(hasActiveFeatures);
+  },
+  testCommand: function(c) {
+    var features = this.get('features');
+    var hasActiveFeatures = function(f) { return features.contains(f.get('id')); };
+
+    var groupFeatures = c.get('features');
+    return groupFeatures.any(hasActiveFeatures);
+  },
+});
+
+App.filter = App.Filter.create();
+
 App.ApplicationRoute = Ember.Route.extend({
   model: function() {
     return {
@@ -17,34 +54,43 @@ App.FeatureController = Ember.ObjectController.extend({
   isActive: false,
   actions: {
     toggle: function(feature) {
-      var wasActive = this.get('isActive');
-      this.set('isActive', !wasActive);
+      this.toggleProperty('isActive');
+      App.filter.setFeature(feature, this.get('isActive'));
     }
   }
 });
 
 App.FeaturesController = Ember.ArrayController.extend({
-  shouldBeVisible: function(v) {
-    return v;
-  }
+  itemController: 'feature',
 });
 
 App.GroupsController = Ember.ArrayController.extend({
   needs: ['features'],
 
   filteredContent: function() {
-    var content = this.get('content');
+    var content = this.get('model');
     if (!content) { return content; }
 
     var features = this.get('controllers.features');
-    var featureFilter = function(group) { return features.shouldBeVisible(group.get('isActive')); };
+    var featureFilter = function(entity) { return App.filter.testGroup(entity); };
 
     return content.filter(featureFilter);
-  }.property('content.isLoaded')
+  }.property('@each', 'App.filter.features.@each'),
 });
 
 App.CommandsController = Ember.ArrayController.extend({
-  filtered: function() {
-    return this;
-  }.property()
+  needs: ['features'],
+
+  // sortProperties: ['name', 'artist'],
+  // sortAscending: true // false for descending
+
+  filteredContent: function() {
+    var content = this.get('model');
+    if (!content) { return content; }
+
+    var features = this.get('controllers.features');
+    var featureFilter = function(entity) { return App.filter.testCommand(entity); };
+
+    return content.filter(featureFilter);
+  }.property('@each', 'App.filter.features.@each'),
 });

@@ -11,13 +11,15 @@ App.Feature = DS.Model.extend({
 // - gl version
 App.Group = DS.Model.extend({
   name: DS.attr('string'),
-  isActive: DS.attr('boolean')
+  isActive: DS.attr('boolean'),
+  features: DS.hasMany('feature')
 });
 
 // TODO:
 // - gl version
 App.Command = DS.Model.extend({
-  name: DS.attr('string')
+  name: DS.attr('string'),
+  features: DS.hasMany('feature')
 });
 
 // TODO: extensions
