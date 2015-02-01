@@ -1,25 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link href="assets/css/bootstrap.min.css" rel="stylesheet">
   <link href="assets/css/application.css" rel="stylesheet">
 
-  <meta charset=utf-8 />
   <title>OpenGL docs</title>
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
 </head>
 <body>
   <script type="text/x-handlebars">
-    <nav>
-      <header>
-      {{render 'features' controller.features}}
-      </header>
-
-      <div>{{render 'groups' controller.groups}}</div>
-      <div>{{render 'commands' controller.commands}}</div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        {{#link-to 'index' classNames='navbar-brand'}}OpenGL Docs{{/link-to}}
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <form action="" class="navbar-form navbar-right">
+           <div class="input-group">
+               <input type="Search" placeholder="Search..." class="form-control" />
+               <div class="input-group-btn">
+                   <button class="btn btn-info">
+                   <span class="glyphicon glyphicon-search"></span>
+                   </button>
+               </div>
+           </div>
+        </form>
+      </div>
+    </div>
     </nav>
 
-    <div>
-      {{outlet}}
+    <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-3">
+        <div class="panel-group" id="navigation" role="tablist">
+          {{render 'features' controller.features}}
+          {{render 'groups' controller.groups}}
+          {{render 'commands' controller.commands}}
+        </div>
+      </div>
+      <div class="col-sm-9 col-md-9 main">
+        {{outlet}}
+      </div>
+    </div>
     </div>
   </script>
 
@@ -28,31 +66,64 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="features">
-    <div class="btn-group btn-group-xs" role="group" aria-label="APIs">
-      {{#each entity in controller itemController='feature'}}
-        <button {{bind-attr class=':btn :btn-sm entity.isActive:btn-primary:btn-default'}} {{action 'toggle' entity}}>
-          {{entity.api}} {{entity.number}}
-        </button>
-      {{/each}}
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-features">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#navigation" href="#features">
+            Features
+          </a>
+        </h4>
+      </div>
+      <div id="features" class="panel-collapse collapse in" role="tabpanel">
+        <div class="panel-body">
+          <div class="btn-group btn-group-xs" role="group" aria-label="APIs">
+            {{#each entity in controller itemController='feature'}}
+              <button {{bind-attr class=':btn :btn-sm entity.isActive:btn-primary:btn-default'}} {{action 'toggle' entity}}>
+                {{entity.api}} {{entity.number}}
+              </button>
+            {{/each}}
+          </div>
+        </div>
+      </div>
     </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="groups">
-    Groups:
-    <ul>
-        {{#each entity in controller.filteredContent}}
-        <li>{{#link-to "group" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
-        {{/each}}
-    </ul>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-groups">
+        <h4 class="panel-title">
+          <a class="collapsed" data-toggle="collapse" data-parent="#navigation" href="#groups">
+            Groups <span class="badge">{{controller.filteredCount}}</span>
+          </a>
+        </h4>
+      </div>
+      <div id="groups" class="panel-collapse collapse" role="tabpanel">
+        <div class="list-group">
+          {{#each entity in controller.filteredContent}}
+          {{#link-to "group" entity classNames="list-group-item" activeClass="active"}}{{entity.name}}{{/link-to}}
+          {{/each}}
+        </div>
+      </div>
+    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="commands">
-      Commands:
-      <ul>
-        {{#each entity in controller.filteredContent}}
-        <li>{{#link-to "command" entity activeClass="selected"}}{{entity.name}}{{/link-to}}</li>
-        {{/each}}
-      </ul>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading-commands">
+        <h4 class="panel-title">
+          <a class="collapsed" data-toggle="collapse" data-parent="#navigation" href="#commands">
+            Commands <span class="badge">{{controller.filteredCount}}</span>
+          </a>
+        </h4>
+      </div>
+      <div id="commands" class="panel-collapse collapse" role="tabpanel">
+        <div class="list-group">
+          {{#each entity in controller.filteredContent}}
+          {{#link-to "command" entity classNames="list-group-item" activeClass="active"}}{{entity.name}}{{/link-to}}
+          {{/each}}
+        </div>
+      </div>
+    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="group">
@@ -60,7 +131,8 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="command">
-    Command {{name}}
+    <div>
+    <div>Command {{name}}</div>
   </script>
 
   <script src="js/libs/jquery-1.11.1.min.js"></script>

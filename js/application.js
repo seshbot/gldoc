@@ -1,8 +1,10 @@
 window.App = Ember.Application.create({
-  LOG_TRANSITIONS: true
+  LOG_TRANSITIONS: true,
+//  rootElement: '#app'
 });
 
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
+
 
 //// http://emberjs.com/api/classes/Ember.ArrayController.html
 //

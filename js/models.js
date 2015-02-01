@@ -11,7 +11,6 @@ App.Feature = DS.Model.extend({
 // - gl version
 App.Group = DS.Model.extend({
   name: DS.attr('string'),
-  isActive: DS.attr('boolean'),
   features: DS.hasMany('feature')
 });
 
@@ -27,81 +26,77 @@ App.Command = DS.Model.extend({
 // data
 //
 
-App.Feature.FIXTURES = [
-  {
-    id: 0,
-    api: 'gl',
-    name: 'GL_VERSION_1_0',
-    number: '1.0'
-  },
-  {
-    id: 1,
-    api: 'gl',
-    name: 'GL_VERSION_1_1',
-    number: '1.1'
-  },
-  {
-    id: 2,
-    api: 'gles1',
-    name: 'GL_VERSION_ES_CM_1_0',
-    number: '1.0'
-  },
-  {
-    id: 3,
-    api: 'gles2',
-    name: 'GL_ES_VERSION_2_0',
-    number: '2.0'
-  },
-  {
-    id: 4,
-    api: 'gles2',
-    name: 'GL_ES_VERSION_3_0',
-    number: '3.0'
-  },
-];
+// App.Feature.FIXTURES = [
+//   {
+//     id: 0,
+//     api: 'gl',
+//     name: 'GL_VERSION_1_0',
+//     number: '1.0'
+//   },
+//   {
+//     id: 1,
+//     api: 'gl',
+//     name: 'GL_VERSION_1_1',
+//     number: '1.1'
+//   },
+//   {
+//     id: 2,
+//     api: 'gles1',
+//     name: 'GL_VERSION_ES_CM_1_0',
+//     number: '1.0'
+//   },
+//   {
+//     id: 3,
+//     api: 'gles2',
+//     name: 'GL_ES_VERSION_2_0',
+//     number: '2.0'
+//   },
+//   {
+//     id: 4,
+//     api: 'gles2',
+//     name: 'GL_ES_VERSION_3_0',
+//     number: '3.0'
+//   },
+// ];
 
-App.Group.FIXTURES = [
- {
-   id: 0,
-   name: 'AccumOp',
-   isActive: false
- },
- {
-   id: 1,
-   name: 'AttribMask',
-   isActive: true
- },
- {
-   id: 2,
-   name: 'AlphaFunction',
-   isActive: false
- },
- {
-   id: 3,
-   name: 'BlendEquationModeEXT',
-   isActive: true
- },
-];
+// App.Group.FIXTURES = [
+//  {
+//    id: 0,
+//    name: 'AccumOp',
+//  },
+//  {
+//    id: 1,
+//    name: 'AttribMask',
+//  },
+//  {
+//    id: 2,
+//    name: 'AlphaFunction',
+//  },
+//  {
+//    id: 3,
+//    name: 'BlendEquationModeEXT',
+//  },
+// ];
 
-App.Command.FIXTURES = [
- {
-   id: 0,
-   name: 'glAccum',
- },
- {
-   id: 1,
-   name: 'glActiveShaderProgram',
- },
- {
-   id: 2,
-   name: 'glActiveTexture',
- },
- {
-   id: 3,
-   name: 'glAlphaFunc',
- },
- {
-   id: 4,
-   name: 'glAreTexturesResident',
- }
-];
+// App.Command.FIXTURES = [
+//  {
+//    id: 0,
+//    name: 'glAccum',
+//  },
+//  {
+//    id: 1,
+//    name: 'glActiveShaderProgram',
+//  },
+//  {
+//    id: 2,
+//    name: 'glActiveTexture',
+//  },
+//  {
+//    id: 3,
+//    name: 'glAlphaFunc',
+//  },
+//  {
+//    id: 4,
+//    name: 'glAreTexturesResident',
+//  }
+// ];

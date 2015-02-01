@@ -62,10 +62,14 @@ App.FeatureController = Ember.ObjectController.extend({
 
 App.FeaturesController = Ember.ArrayController.extend({
   itemController: 'feature',
+  sortProperties: ['api', 'number'],
+  sortAscending: true // false for descending
 });
 
 App.GroupsController = Ember.ArrayController.extend({
   needs: ['features'],
+
+  filteredCount: 0,
 
   filteredContent: function() {
     var content = this.get('model');
@@ -74,7 +78,10 @@ App.GroupsController = Ember.ArrayController.extend({
     var features = this.get('controllers.features');
     var featureFilter = function(entity) { return App.filter.testGroup(entity); };
 
-    return content.filter(featureFilter);
+    var filtered = content.filter(featureFilter);
+    this.set('filteredCount', filtered.get('length'));
+
+    return filtered;
   }.property('@each', 'App.filter.features.@each'),
 });
 
@@ -84,6 +91,8 @@ App.CommandsController = Ember.ArrayController.extend({
   // sortProperties: ['name', 'artist'],
   // sortAscending: true // false for descending
 
+  filteredCount: 0,
+
   filteredContent: function() {
     var content = this.get('model');
     if (!content) { return content; }
@@ -91,6 +100,9 @@ App.CommandsController = Ember.ArrayController.extend({
     var features = this.get('controllers.features');
     var featureFilter = function(entity) { return App.filter.testCommand(entity); };
 
-    return content.filter(featureFilter);
+    var filtered = content.filter(featureFilter);
+    this.set('filteredCount', filtered.get('length'));
+
+    return filtered;
   }.property('@each', 'App.filter.features.@each'),
 });

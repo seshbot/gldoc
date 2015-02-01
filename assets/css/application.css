@@ -1,1 +1,11 @@
 .selected { font-weight: bold; }
+body {
+  padding-top: 70px;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+  }
+}
+
