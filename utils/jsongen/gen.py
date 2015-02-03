@@ -31,7 +31,17 @@ import xml.etree.cElementTree as etree
 # reversed(xrange(1,10,2))
 # for k, v in knights.iteritems():
 
-def writeEntities(entities, filename, varname):
+
+# TODO: extensions
+# TODO: commands without 'features' are always 'aliases' ?
+#  if so, create an 'aliases' collection and remove them from commands
+
+def writeEntitiesToExistingFile(entities, varname, fp):
+  fp.write('{ "%s": ' % varname)
+  writeJson(entities, fp)
+  fp.write('}')
+
+def writeEntitiesToNewFile(entities, filename, varname):
   fp = open(filename, 'w')
   fp.write("var %s = " % varname)
   writeJson(entities, fp)
@@ -79,6 +89,35 @@ if __name__ == '__main__':
 
   registry = Registry(features, enums, groups, commands)
 
-  writeEntities(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
-  writeEntities(registry.groups, os.path.join(outputpath, 'groups.js'), 'GL_REGISTRY_GROUPS')
-  writeEntities(registry.commands, os.path.join(outputpath, 'commands.js'), 'GL_REGISTRY_COMMANDS')
+  # print 'verifying enum groups are consistent...'
+  # for e in registry.enums:
+  #   if len(e.groups) > 1:
+  #     print '  - enum %s is a member of groups %s' % (e.name, [g.name for g in e.groups])
+
+  # print 'verifying features have sensible enums...'
+  # for f in registry.features:
+  #   enum_names = {e.name for e in f.requiredEnums}
+  #   print '  - feature %s has %s enums' % (f.name, len(enum_names))
+  #   flatten = lambda ll: reduce(lambda a, b: a | b, ll, set())
+  #   expanded_enums = flatten([g.enums for e in f.requiredEnums for g in e.groups])
+  #   expanded_enum_names = {e.name for e in expanded_enums}
+  #   print '               should have %s' % len(expanded_enum_names)
+  #   diff = expanded_enum_names - enum_names
+  #   print '               diff: %s' % diff
+
+  # TODO: extensions
+  # TODO: aliases
+
+  print 'writing js files'
+  writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
+  writeEntitiesToNewFile(registry.coreGroups, os.path.join(outputpath, 'groups.js'), 'GL_REGISTRY_GROUPS')
+  writeEntitiesToNewFile(registry.coreCommands, os.path.join(outputpath, 'commands.js'), 'GL_REGISTRY_COMMANDS')
+  writeEntitiesToNewFile(registry.coreParameters, os.path.join(outputpath, 'parameters.js'), 'GL_REGISTRY_PARAMETERS')
+
+  print 'writing json file'
+  fp = open(os.path.join(outputpath, 'data.json'), 'w')
+  writeEntitiesToExistingFile(registry.features, 'features', fp)
+  writeEntitiesToExistingFile(registry.coreGroups, 'groups', fp)
+  writeEntitiesToExistingFile(registry.coreCommands, 'commands', fp)
+  writeEntitiesToExistingFile(registry.coreParameters, 'parameters', fp)
+  fp.close

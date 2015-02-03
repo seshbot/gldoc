@@ -129,12 +129,27 @@ class ParameterXml:
 
     self.groupString = xml.attrib.get("group", None)
 
+    # must go last
+    self.hash = hash(str(self))
+
   def __str__(self):
-    return "%s %s" % (self.type, self.name)
+    if self.groupString != None:
+      return "%s %s" % (self.groupString, self.name)
+    else:
+      return "%s %s" % (self.type, self.name)
+
+  def __lt__(self, other):
+    return self.hash < other.hash
 
 
 class CommandXml:
   def __init__(self, xml):
+    # <command>
+    #     <proto>void <name>glActiveTextureARB</name></proto>
+    #     <param group="TextureUnit"><ptype>GLenum</ptype> <name>texture</name></param>
+    #     <alias name="glActiveTexture"/>
+    #     <glx type="render" opcode="197"/>
+    # </command>
     proto = xml.find("proto")
 
     self.name       = proto.find("name").text

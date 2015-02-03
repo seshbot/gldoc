@@ -45,7 +45,8 @@ App.ApplicationRoute = Ember.Route.extend({
     return {
       features: this.store.find('feature'),
       groups: this.store.find('group'),
-      commands: this.store.find('command')
+      commands: this.store.find('command'),
+      parameters: this.store.find('parameter')
     };
   },
 });

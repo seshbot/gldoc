@@ -131,8 +131,23 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="command">
-    <div>
-    <div>Command {{name}}</div>
+    <h4>Command {{name}}</h4>
+    <div class="command">
+      <span class="return_type">{{return_type}}</span>
+      <span class="name">{{name}}</span>
+      <span class="params">
+      (
+        <ul class="param_list">
+        {{#each p in controller.parameters}}
+          <li>
+            <span class="param_type">{{p.type}}</span>
+            {{p.name}}
+          </li>
+        {{/each}}
+        </ul>
+      )
+      </span>
+    </div>
   </script>
 
   <script src="js/libs/jquery-1.11.1.min.js"></script>
@@ -148,10 +163,12 @@
   <script src="assets/registry/features.js"></script>
   <script src="assets/registry/groups.js"></script>
   <script src="assets/registry/commands.js"></script>
+  <script src="assets/registry/parameters.js"></script>
   <script>
     App.Feature.FIXTURES = GL_REGISTRY_FEATURES;
     App.Group.FIXTURES = GL_REGISTRY_GROUPS;
     App.Command.FIXTURES = GL_REGISTRY_COMMANDS;
+    App.Parameter.FIXTURES = GL_REGISTRY_PARAMETERS;
   </script>
 </body>
 </html>
