@@ -1,6 +1,7 @@
 App.Router.map(function() {
   this.resource('group', { path: '/groups/:group_id' });
   this.resource('command', { path: '/commands/:command_id' });
+  this.route('search_results', { path: '/search/:query'});
 });
 
 App.Filter = Ember.Object.extend({
@@ -49,6 +50,37 @@ App.ApplicationRoute = Ember.Route.extend({
       parameters: this.store.find('parameter')
     };
   },
+
+  actions: {
+    search: function() {
+      var querystr = $('#search').val();
+      if (querystr === '') {
+        return;
+      }
+
+      this.transitionTo('search_results', querystr);
+    }
+  }
+});
+
+App.SearchResultsRoute = Ember.Route.extend({
+  model: function(params) {
+    var querystr = params.query.toUpperCase();
+    var command_results = this.store.filter('command', function(c) {
+      return c.get('name').toUpperCase().indexOf(querystr) > -1;
+    });
+    var group_results = this.store.filter('group', function(c) {
+      return c.get('name').toUpperCase().indexOf(querystr) > -1;
+    });
+
+    return {
+      commands: command_results,
+      groups: group_results
+    };
+  },
+  serialize: function(query) {
+    return {q: query};
+  }
 });
 
 App.FeatureController = Ember.ObjectController.extend({

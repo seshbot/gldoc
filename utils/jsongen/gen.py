@@ -32,9 +32,11 @@ import xml.etree.cElementTree as etree
 # for k, v in knights.iteritems():
 
 
+# TODO: feature 'requires' inherit requires from previous versions...
 # TODO: extensions
 # TODO: commands without 'features' are always 'aliases' ?
 #  if so, create an 'aliases' collection and remove them from commands
+# TODO: filter enums based on features
 
 def writeEntitiesToExistingFile(entities, varname, fp):
   fp.write('{ "%s": ' % varname)
@@ -110,6 +112,7 @@ if __name__ == '__main__':
 
   print 'writing js files'
   writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
+  writeEntitiesToNewFile(registry.coreEnums, os.path.join(outputpath, 'enums.js'), 'GL_REGISTRY_ENUMS')
   writeEntitiesToNewFile(registry.coreGroups, os.path.join(outputpath, 'groups.js'), 'GL_REGISTRY_GROUPS')
   writeEntitiesToNewFile(registry.coreCommands, os.path.join(outputpath, 'commands.js'), 'GL_REGISTRY_COMMANDS')
   writeEntitiesToNewFile(registry.coreParameters, os.path.join(outputpath, 'parameters.js'), 'GL_REGISTRY_PARAMETERS')
@@ -117,6 +120,7 @@ if __name__ == '__main__':
   print 'writing json file'
   fp = open(os.path.join(outputpath, 'data.json'), 'w')
   writeEntitiesToExistingFile(registry.features, 'features', fp)
+  writeEntitiesToExistingFile(registry.coreEnums, 'enums', fp)
   writeEntitiesToExistingFile(registry.coreGroups, 'groups', fp)
   writeEntitiesToExistingFile(registry.coreCommands, 'commands', fp)
   writeEntitiesToExistingFile(registry.coreParameters, 'parameters', fp)

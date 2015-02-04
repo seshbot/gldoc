@@ -31,9 +31,9 @@
         {{#link-to 'index' classNames='navbar-brand'}}OpenGL Docs{{/link-to}}
       </div>
       <div id="navbar" class="collapse navbar-collapse">
-        <form action="" class="navbar-form navbar-right">
+        <form {{action 'search'}} class="navbar-form navbar-right">
            <div class="input-group">
-               <input type="Search" placeholder="Search..." class="form-control" />
+               <input type="Search" placeholder="Search..." class="form-control" id="search" />
                <div class="input-group-btn">
                    <button class="btn btn-info">
                    <span class="glyphicon glyphicon-search"></span>
@@ -65,12 +65,28 @@
     home index - select something...
   </script>
 
+  <script type="text/x-handlebars" data-template-name="search_results">
+    <h4>Search Results</h4>
+    <h5>Commands</h5>
+    <ul>
+    {{#each result in controller.commands}}
+      <li>{{#link-to 'command' result}}{{result.name}}{{/link-to}}</li>
+    {{/each}}
+    </ul>
+    <h5>Enum Groups</h5>
+    <ul>
+    {{#each result in controller.groups}}
+      <li>{{#link-to 'group' result}}{{result.name}}{{/link-to}}</li>
+    {{/each}}
+    </ul>
+  </script>
+
   <script type="text/x-handlebars" data-template-name="features">
     <div class="panel panel-default">
       <div class="panel-heading" role="tab" id="heading-features">
         <h4 class="panel-title">
           <a data-toggle="collapse" data-parent="#navigation" href="#features">
-            Features
+            Versions
           </a>
         </h4>
       </div>
@@ -93,7 +109,7 @@
       <div class="panel-heading" role="tab" id="heading-groups">
         <h4 class="panel-title">
           <a class="collapsed" data-toggle="collapse" data-parent="#navigation" href="#groups">
-            Groups <span class="badge">{{controller.filteredCount}}</span>
+            Enums <span class="badge">{{controller.filteredCount}}</span>
           </a>
         </h4>
       </div>
@@ -127,20 +143,36 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="group">
-    Group {{name}}
+    <h4>Enum Group {{name}}</h4>
+    <ul class="list-inline version-list">
+      {{#each feature in features}}
+        <li>{{feature.api}} {{feature.number}}</li>
+      {{/each}}
+    </ul>
+    <ul class="group">
+      {{#each enum in enums}}
+        <li><span class="name">{{enum.name}}</span>&nbsp;<span class="value">{{enum.value}}</span></li>
+      {{/each}}
+    </ul>
   </script>
 
   <script type="text/x-handlebars" data-template-name="command">
     <h4>Command {{name}}</h4>
+    <ul class="list-inline version-list">
+      {{#each feature in features}}
+        <li>{{feature.api}} {{feature.number}}</li>
+      {{/each}}
+    </ul>
+
     <div class="command">
-      <span class="return_type">{{return_type}}</span>
+      <span class="return-type">{{return_type}}</span>
       <span class="name">{{name}}</span>
       <span class="params">
       (
         <ul class="param_list">
         {{#each p in controller.parameters}}
           <li>
-            <span class="param_type">{{p.type}}</span>
+            <span class="param-type">{{p.type}}</span>
             {{p.name}}
           </li>
         {{/each}}
@@ -161,11 +193,13 @@
   <script src="js/models.js"></script>
 
   <script src="assets/registry/features.js"></script>
+  <script src="assets/registry/enums.js"></script>
   <script src="assets/registry/groups.js"></script>
   <script src="assets/registry/commands.js"></script>
   <script src="assets/registry/parameters.js"></script>
   <script>
     App.Feature.FIXTURES = GL_REGISTRY_FEATURES;
+    App.Enum.FIXTURES = GL_REGISTRY_ENUMS;
     App.Group.FIXTURES = GL_REGISTRY_GROUPS;
     App.Command.FIXTURES = GL_REGISTRY_COMMANDS;
     App.Parameter.FIXTURES = GL_REGISTRY_PARAMETERS;

@@ -9,12 +9,19 @@ body {
   }
 }
 
-.command { font-family: monospace; margin-top: 1em;}
-.command .return_type { color: #e66170; }
+ul.version-list { font-family: monospace; font-size: .75em; }
+ul.version-list li { color: gray; }
+
+.command { font-family: monospace; margin-top: 1em; }
+.command .return-type { color: #e66170; }
 .command .params { color: #d2cd86; }
-.command .param_type { color: #e66170; }
+.command .param-type { color: #e66170; }
 
 ul.param_list { display: inline; list-style-type: none; padding: 0;}
 ul.param_list li { display: inline; }
 ul.param_list li:after { content: ','}
 ul.param_list li:last-of-type:after { content:'' }
+
+ul.group { font-family: monospace; list-style-type: none; padding-left: 0; max-width: 25em;}
+ul.group li .name { color: #e66170; }
+ul.group li .value { color: gray; float:right;}

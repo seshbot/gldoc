@@ -9,11 +9,18 @@ App.Feature = DS.Model.extend({
   required_commands: DS.hasMany("command", {async: true}),
 });
 
+App.Enum = DS.Model.extend({
+  name: DS.attr('string'),
+  value: DS.attr('string'),
+  features: DS.hasMany('feature', {async: true})
+});
+
 // TODO:
 // - gl version
 App.Group = DS.Model.extend({
   name: DS.attr('string'),
-  features: DS.hasMany('feature', {async: true})
+  features: DS.hasMany('feature', {async: true}),
+  enums: DS.hasMany('enum', {async: true})
 });
 
 // TODO:

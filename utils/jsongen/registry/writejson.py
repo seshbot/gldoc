@@ -35,10 +35,21 @@ class Enum:
   def __init__(self, data, id):
     self.id = id
     self.name = data.name
+    self.value = data.value
     self.data = data
 
     self.features = set()
     self.groups = set()
+
+  def toDictionary(self):
+    data = {}
+    data['id'] = self.id
+    data['name'] = self.name
+    data['value'] = self.value
+
+    data['features'] = map(lambda f: f.id, self.features)
+    
+    return data
 
 
 class Group:
@@ -179,6 +190,8 @@ class Registry:
     hasFeatures = lambda e: len(e.features) > 0
     self.coreEnums = filter(hasFeatures, self.enums)
     self.coreGroups = filter(hasFeatures, self.groups)
+    for g in self.coreGroups:
+      g.enums = filter(hasFeatures, g.enums)
     self.coreCommands = filter(hasFeatures, self.commands)
     coreParamSet = {p for c in self.coreCommands for p in c.parameters}
     self.coreParameters = list(coreParamSet)

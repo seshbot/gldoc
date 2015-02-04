@@ -92,6 +92,8 @@ class EnumXml:
 
 class GroupXml:    
   def __init__(self, xml):
+    # TODO: incorporate 'type' (e.g., bitmask) from enum collection (not group)
+    
     self.enumStrings = []
 
     if isinstance(xml, str):
