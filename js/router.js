@@ -23,6 +23,13 @@ App.Filter = Ember.Object.extend({
       features.removeObject(featureId);
     }
   },
+  setFeatures: function(fs, shouldSet) {
+    var self = this;
+    fs.forEach(function(f) { self.setFeature(f, shouldSet); });
+  },
+  unsetAllFeatures: function() {
+    this.get('features').clear();
+  },
   testGroup: function(g) {
     var features = this.get('features');
     var hasActiveFeatures = function(f) { return features.contains(f.get('id')); };
@@ -40,6 +47,11 @@ App.Filter = Ember.Object.extend({
 });
 
 App.filter = App.Filter.create();
+
+
+//
+// Routes
+//
 
 App.ApplicationRoute = Ember.Route.extend({
   model: function() {
@@ -80,6 +92,45 @@ App.SearchResultsRoute = Ember.Route.extend({
   },
   serialize: function(query) {
     return {q: query};
+  }
+});
+
+
+//
+// Controllers
+//
+
+App.NavbarController = Ember.ObjectController.extend({
+  currentVersion: 'Choose Version',
+
+  versions: function() {
+    var featureVersion = function(f) { return f.get('api') + ' ' + f.get('number').split('.')[0] };
+    var features = this.get('features');
+
+    var featureVersions = features.map(featureVersion).uniq();
+    featureVersions.sort();
+
+    var featuresByVersion = [];
+    featureVersions.forEach(function(version){
+      var matchesVersion = function(f) { return featureVersion(f) == version };
+      var versionFeatures = features.filter(matchesVersion);
+
+      var entity = Ember.Object.create({
+        api: version,
+        features: versionFeatures
+      });
+      featuresByVersion.push(entity);
+    });
+    return featuresByVersion;
+  }.property('features.@each'),
+
+  actions: {
+    setVersion: function(v) {
+      var features = v.get('features');
+      this.set('currentVersion', v.get('api'));
+      App.filter.unsetAllFeatures();
+      App.filter.setFeatures(features, true);
+    }
   }
 });
 

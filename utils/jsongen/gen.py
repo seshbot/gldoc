@@ -110,6 +110,10 @@ if __name__ == '__main__':
   # TODO: extensions
   # TODO: aliases
 
+  for api, features in registry.featuresByApi.iteritems():
+    featureString = ', '.join(map(lambda f: f.number, features))
+    print 'api %s features: %s' % (api, featureString)
+
   print 'writing js files'
   writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
   writeEntitiesToNewFile(registry.coreEnums, os.path.join(outputpath, 'enums.js'), 'GL_REGISTRY_ENUMS')

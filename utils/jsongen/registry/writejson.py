@@ -6,19 +6,28 @@ class Feature:
     self.name = data.name
     self.data = data
 
+    self.api = data.api
+    self.number = data.number
+
     self.requiredEnums = set() #[registry.enumIdsByName[name] for name in feature.reqEnumStrings]
     self.removedEnums  = set() #[registry.enumIdsByName[name] for name in feature.remEnumStrings]
 
     self.requiredCommands = set() #[registry.commandIdsByName[name] for name in feature.reqCommandStrings]
     self.removedCommands  = set() #[registry.commandIdsByName[name] for name in feature.remCommandStrings]
 
+    self.inheritsFromFeature = None
+    self.inheritingFeature = None
+
+  def __str__(self):
+    return '%s_%s' % (self.api, self.number)
+
   def toDictionary(self):
     data = {}
     data['id'] = self.id
     data['name'] = self.name
 
-    data['api'] = self.data.api
-    data['number'] = self.data.number
+    data['api'] = self.api
+    data['number'] = self.number
 
     data['require_comments'] = self.data.requireComments
 
@@ -126,11 +135,23 @@ class Registry:
     self.groups   = [Group(e, id) for id, e in enumerate(xmlGroups)]
     self.commands = [Command(e, id) for id, e in enumerate(xmlCommands)]
 
+    self.features = sorted(self.features, lambda f1, f2: str(f1) < str(f2))
+
+    self.featuresByApi = {}
+    for api in {f.api for f in self.features}:
+      cmpKey = lambda f: f.number
+      apiFeatures = sorted([f for f in self.features if f.api == api], key=cmpKey)
+      self.featuresByApi[api] = apiFeatures
+      # link the features in this api together (feature.inheritsFromFeature)
+      for idx in range(1, len(apiFeatures)):
+        apiFeatures[idx].inheritsFromFeature = apiFeatures[idx - 1]
+        apiFeatures[idx - 1].inheritingFeature = apiFeatures[idx]
+
+    # compress all parameters into a single list of unique parameter specifications
     # TODO: verify this doesnt overwrite dissimilar parameters
     paramXmlsByHash = {p.hash: p for c in xmlCommands for p in c.params}
     uniqueXmlParameters = paramXmlsByHash.values()
     self.parameters = [Parameter(e, id) for id, e in enumerate(uniqueXmlParameters)]
-
 
     #
     # create lookup tables
@@ -159,6 +180,26 @@ class Registry:
 
       f.requiredCommands = {self.commandsByName[name] for name in f.data.reqCommandStrings}
       f.removedCommands  = {self.commandsByName[name] for name in f.data.remCommandStrings}
+
+    print(' - cascading feature requirements...')
+    for api, features in self.featuresByApi.iteritems():
+      requiredEnums = set()
+      requiredCommands = set()
+
+      #assuming features are sorted in ascending order of version number
+      prevFeature = None
+      for f in features:
+        if prevFeature != None and prevFeature.number > f.number:
+          print('   - ERROR: features out of order!')
+        prevFeature = f
+
+        requiredEnums = requiredEnums - f.removedEnums
+        requiredEnums = requiredEnums | f.requiredEnums
+        f.requiredEnums = requiredEnums
+
+        requiredCommands = requiredCommands - f.removedCommands
+        requiredCommands = requiredCommands | f.requiredCommands
+        f.requiredCommands = requiredCommands
 
     print(' - updating enum references...')
     for e in self.enums:

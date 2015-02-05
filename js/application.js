@@ -27,4 +27,18 @@ App.ApplicationAdapter = DS.FixtureAdapter.extend();
 //       App.advanceReadiness();
 //     });
 //   }
+
+// OR (from application.js docs)
+
+// Ember.Application.initializer({
+//   name: 'preload-data',
+//   initialize: function(container, application) {
+//     var store = container.lookup('store:main');
+//     store.pushPayload(preloadedData);
+//   }
+
 // });
+
+
+
+
