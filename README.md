@@ -10,9 +10,9 @@ All information is derived from the [Khronos OpenGL API registry](https://cvs.kh
 
 TODO:
  - allow OpenGL extensions to be explored
+ - related to the above, show 'alias' commands (generally provided by extensions)
  - source command description and usage text from somewhere
  - add disqus comments or something?
- - related to the above, show 'alias' commands (generally provided by extensions)
  - indicate deprecated enums and functions
  - performance: use localstorage so JSON data doesn't have to be loaded into the app every visit
  - performance: generate static HTML instead of running as a dynamic ember application (using FastBoot?)
