@@ -35,6 +35,7 @@ App.Command = DS.Model.extend({
 App.Parameter = DS.Model.extend({
   name: DS.attr('string'),
   type: DS.attr('string'),
+  group: DS.belongsTo('group')
 });
 
 // TODO: extensions

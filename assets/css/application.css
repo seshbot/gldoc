@@ -18,11 +18,10 @@ ul.version-list li { color: gray; }
 .command .return-type { color: #e66170; }
 .command .params { color: #d2cd86; }
 .command .param-type { color: #e66170; }
+.comment { color: darkgray; }
 
-ul.param_list { display: inline; list-style-type: none; padding: 0;}
-ul.param_list li { display: inline; }
-ul.param_list li:after { content: ','}
-ul.param_list li:last-of-type:after { content:'' }
+
+ul.param-list { list-style-type: none; }
 
 ul.group { font-family: monospace; list-style-type: none; padding-left: 0; max-width: 25em;}
 ul.group li .name { color: #e66170; }

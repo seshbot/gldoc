@@ -85,7 +85,8 @@ class Parameter:
   def __init__(self, data, id):
     self.id = id
     self.name = data.name
-    self.type = data.groupString if data.groupString != None else data.type
+    self.group = None
+    self.type = data.type
     self.data = data
     self.hash = data.hash
 
@@ -97,6 +98,8 @@ class Parameter:
     data['id'] = self.id
     data['name'] = self.name
     data['type'] = self.type
+    if self.group:
+      data['group'] = self.group.id
     return data
 
 
@@ -227,7 +230,14 @@ class Registry:
       c.features = {f for f in self.features if c in f.requiredCommands}
       c.parameters = set(map(lambda h: self.parametersByHash[h], c.parameterHashes))
 
+    print(' - updating parameter references...')
+    for p in self.parameters:
+      groupstr = p.data.groupString
+      if groupstr and groupstr in self.groupsByName:
+        p.group = self.groupsByName[groupstr]
 
+    # filter out all entities that are not associated with any feature
+    # (i.e, extension only commands and enums)
     hasFeatures = lambda e: len(e.features) > 0
     self.coreEnums = filter(hasFeatures, self.enums)
     self.coreGroups = filter(hasFeatures, self.groups)

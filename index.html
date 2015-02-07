@@ -186,11 +186,14 @@
       <span class="name">{{name}}</span>
       <span class="params">
       (
-        <ul class="param_list">
+        <ul class="param-list">
         {{#each p in controller.parameters}}
           <li>
             <span class="param-type">{{p.type}}</span>
-            {{p.name}}
+            {{p.name}},
+            {{#if p.group}}
+              <span class="comment">// {{#link-to 'group' p.group}}{{p.group.name}}{{/link-to}}</span>
+            {{/if}}
           </li>
         {{/each}}
         </ul>
