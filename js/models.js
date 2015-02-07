@@ -12,7 +12,8 @@ App.Feature = DS.Model.extend({
 App.Enum = DS.Model.extend({
   name: DS.attr('string'),
   value: DS.attr('string'),
-  features: DS.hasMany('feature', {async: true})
+  features: DS.hasMany('feature', {async: true}),
+  groups: DS.hasMany('group', {async: true})
 });
 
 // TODO:

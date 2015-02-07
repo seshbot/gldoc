@@ -79,13 +79,17 @@ App.SearchResultsRoute = Ember.Route.extend({
     var command_results = this.store.filter('command', function(c) {
       return c.get('name').toUpperCase().indexOf(querystr) > -1;
     });
-    var group_results = this.store.filter('group', function(c) {
-      return c.get('name').toUpperCase().indexOf(querystr) > -1;
+    var group_results = this.store.filter('group', function(g) {
+      return g.get('name').toUpperCase().indexOf(querystr) > -1;
+    });
+    var enum_results = this.store.filter('enum', function(e) {
+      return e.get('name').toUpperCase().indexOf(querystr) > -1;
     });
 
     return {
       commands: command_results,
-      groups: group_results
+      groups: group_results,
+      enums: enum_results,
     };
   },
   serialize: function(query) {
@@ -190,6 +194,10 @@ App.GroupsController = Ember.ArrayController.extend({
 
     return filtered;
   }.property('@each', 'App.filter.features.@each'),
+
+  show: function() {
+    return this.get('filteredCount') > 0;
+  }.property('filteredCount'),
 });
 
 App.CommandsController = Ember.ArrayController.extend({
@@ -212,6 +220,10 @@ App.CommandsController = Ember.ArrayController.extend({
 
     return filtered;
   }.property('@each', 'App.filter.features.@each'),
+
+  show: function() {
+    return this.get('filteredCount') > 0;
+  }.property('filteredCount'),
 });
 
 App.VersionedEntityController = Ember.ObjectController.extend({

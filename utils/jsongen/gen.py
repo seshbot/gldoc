@@ -32,11 +32,9 @@ import xml.etree.cElementTree as etree
 # for k, v in knights.iteritems():
 
 
-# TODO: feature 'requires' inherit requires from previous versions...
 # TODO: extensions
 # TODO: commands without 'features' are always 'aliases' ?
 #  if so, create an 'aliases' collection and remove them from commands
-# TODO: filter enums based on features
 
 def writeEntitiesToExistingFile(entities, varname, fp):
   fp.write('{ "%s": ' % varname)
@@ -128,3 +126,5 @@ if __name__ == '__main__':
   writeEntitiesToExistingFile(registry.coreCommands, 'commands', fp)
   writeEntitiesToExistingFile(registry.coreParameters, 'parameters', fp)
   fp.close
+
+  print 'writing cpp files'

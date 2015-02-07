@@ -37,7 +37,24 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="index">
-    <strong>Select a version or search for a command or enum in the toolbar above</strong>
+    <h1>OpenGL docs</h1>
+
+    <p>This application is generated from the <a href="https://cvs.khronos.org/svn/repos/ogl/trunk/doc/registry/public/api/gl.xml">Khronos OpenGL API registry</a>. The project is currently hosted on <a href="https://github.com/seshbot/gldoc">Github</a>. It is a static site that uses <a href="http://getbootstrap.com">Twitter bootstrap</a> and <a href="http://emberjs.com">Ember.js</a>.</p>
+
+    <p><strong>To use</strong>, just search for an enum, enum group name or part of a command name in the search box above, or select an API version from the above dropdown and navigate using the nav bar on the left.</p>
+
+    <p>This was created to help me explore the different OpenGL version APIs, to allow auto-generation of OpenGL wrapper libraries.</p>
+
+    <p>This covers the bulk of the available OpenGL APIs but there are still a few things I should add for it to be complete:</p>
+
+    <ul>
+    <li>allow OpenGL extensions to be explored</li>
+    <li>related to the above, show 'alias' commands (generally provided by extensions)</li>
+    <li>indicate deprecated enums and functions</li>
+    <li><strong>performance:</strong> use localstorage so JSON data doesn't have to be loaded into the app every visit</li>
+    <li><strong>performance:</strong> generate static HTML instead of running as a dynamic ember application (using <a href="https://www.npmjs.com/package/ember-fastboot">FastBoot</a>?)</li>
+    </ul>
+    <!-- ' -->
   </script>
 
   <script type="text/x-handlebars" data-template-name="navbar">
@@ -110,10 +127,21 @@
       <li>{{#link-to 'group' result}}{{result.name}}{{/link-to}}</li>
     {{/each}}
     </ul>
+    <h5>Enums</h5>
+    <ul>
+    {{#each result in controller.enums}}
+      <li><code>{{result.name}}</code> (in
+        {{#each g in result.groups}}
+          {{#link-to 'group' g}}{{g.name}}{{/link-to}}
+        {{/each}}
+        )
+      </li>
+    {{/each}}
+    </ul>
   </script>
 
   <script type="text/x-handlebars" data-template-name="groups">
-    <div class="panel panel-default">
+    <div {{bind-attr class=":panel :panel-default show::hidden"}}>
       <div class="panel-heading" role="tab" id="heading-groups">
         <h4 class="panel-title">
           <a class="collapsed" data-toggle="collapse" data-parent="#navigation" href="#groups">
@@ -132,7 +160,7 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="commands">
-    <div class="panel panel-default">
+    <div {{bind-attr class=":panel :panel-default show::hidden"}}>
       <div class="panel-heading" role="tab" id="heading-commands">
         <h4 class="panel-title">
           <a class="collapsed" data-toggle="collapse" data-parent="#navigation" href="#commands">
