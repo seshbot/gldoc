@@ -7,19 +7,17 @@ App.Router.map(function() {
 App.Filter = Ember.Object.extend({
   searchString: '',
   features: [],
+
   setSearchString: function(s) {
-    console.log('setting search string', s);
     this.set('searchString', s);
   },
   setFeature: function(f, shouldSet) {
     var featureId = f.get('id');
     var features = this.get('features');
     if (shouldSet && !features.contains(featureId)) {
-      console.log('setting feature', featureId);
       features.pushObject(featureId);
     }
     if (!shouldSet && features.contains(featureId)) {
-      console.log('removing feature', featureId);
       features.removeObject(featureId);
     }
   },
@@ -71,7 +69,7 @@ App.ApplicationRoute = Ember.Route.extend({
       }
 
       this.transitionTo('search_results', querystr);
-    }
+    },
   }
 });
 
@@ -101,7 +99,7 @@ App.SearchResultsRoute = Ember.Route.extend({
 //
 
 App.NavbarController = Ember.ObjectController.extend({
-  currentVersion: 'Choose Version',
+  currentVersion: null,
 
   versions: function() {
     var featureVersion = function(f) { return f.get('api') + ' ' + f.get('number').split('.')[0] };
@@ -124,10 +122,35 @@ App.NavbarController = Ember.ObjectController.extend({
     return featuresByVersion;
   }.property('features.@each'),
 
+  recalcCurrentVersion: function() {
+    var versionApi = $.cookie('currentVersionApi');
+    if (Ember.isEmpty(versionApi)) {
+      this.set('currentVersion', null);
+      return;
+    }
+
+    var self = this;
+    var versions = this.get('versions');
+    versions.forEach(function(v) {
+      if (v.get('api') == versionApi) {
+        self.send('setVersion', v);
+      }
+    });
+  }.observes('versions', 'versions.@each'),
+
+  versionCookie: function() {
+    var currentVersion = this.get('currentVersion');
+    if (Ember.isEmpty(currentVersion)) {
+      $.removeCookie('currentVersionApi');
+    } else {
+      $.cookie('currentVersionApi', currentVersion.get('api'));
+    }
+  }.observes('currentVersion'),
+
   actions: {
     setVersion: function(v) {
       var features = v.get('features');
-      this.set('currentVersion', v.get('api'));
+      this.set('currentVersion', v);
       App.filter.unsetAllFeatures();
       App.filter.setFeatures(features, true);
     }

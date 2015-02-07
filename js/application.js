@@ -8,6 +8,13 @@ window.App = Ember.Application.create({
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
 
+// App.ApplicationSerializer = DS.LSSerializer.extend();
+// App.ApplicationAdapter = DS.LSAdapter.extend({
+//     namespace: 'yournamespace'
+// });
+
+
+
 //// http://emberjs.com/api/classes/Ember.ArrayController.html
 //
 // $.get('people.json', function(data) {
@@ -39,6 +46,7 @@ App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
 // });
 
+// TODO: also load filter from cookies?
 
 
 

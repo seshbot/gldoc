@@ -110,9 +110,8 @@ if __name__ == '__main__':
   # TODO: extensions
   # TODO: aliases
 
-  for api, features in registry.featuresByApi.iteritems():
-    featureString = ', '.join(map(lambda f: f.number, features))
-    print 'api %s features: %s' % (api, featureString)
+  # NOTE: we normalise command parameters into another file because some commands are reused many times
+  # e.g., 'GLuint index' is used by 416 commands
 
   print 'writing js files'
   writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')

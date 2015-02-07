@@ -37,7 +37,7 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="index">
-    home index - select something...
+    <strong>Select a version or search for a command or enum in the toolbar above</strong>
   </script>
 
   <script type="text/x-handlebars" data-template-name="navbar">
@@ -80,7 +80,7 @@
           <!-- version dropdown -->
           <!--                  -->
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{currentVersion}} <span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{#if currentVersion}}{{currentVersion.api}}{{else}}Select Version{{/if}}<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
 
               {{#each entity in versions}}
@@ -191,6 +191,7 @@
   </script>
 
   <script src="js/libs/jquery-1.11.1.min.js"></script>
+  <script src="js/libs/jquery.cookie.js"></script>
   <script src="js/libs/bootstrap.min.js"></script>
   <script src="js/libs/handlebars-v1.3.0.js"></script>
   <script src="js/libs/ember-1.8.1.js"></script>
