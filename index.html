@@ -18,6 +18,11 @@
   <![endif]-->
 </head>
 <body>
+  <div class="scroll-top-wrapper ">
+    <span class="scroll-top-inner">
+      <span class="glyphicon glyphicon-chevron-up"></span>
+    </span>
+  </div>
   <script type="text/x-handlebars">
     {{render 'navbar' model}}
 
@@ -252,6 +257,40 @@
     App.Group.FIXTURES = GL_REGISTRY_GROUPS;
     App.Command.FIXTURES = GL_REGISTRY_COMMANDS;
     App.Parameter.FIXTURES = GL_REGISTRY_PARAMETERS;
+
+    // scroll button http://www.webtipblog.com/adding-scroll-top-button-website/
+    $(function(){
+      $(document).on( 'scroll', function(){
+     
+        if ($(window).scrollTop() > 100) {
+          $('.scroll-top-wrapper').addClass('show');
+        } else {
+          $('.scroll-top-wrapper').removeClass('show');
+        }
+      });
+    });
+
+    $(function(){
+     
+      $(document).on( 'scroll', function(){
+     
+        if ($(window).scrollTop() > 100) {
+          $('.scroll-top-wrapper').addClass('show');
+        } else {
+          $('.scroll-top-wrapper').removeClass('show');
+        }
+      });
+     
+      $('.scroll-top-wrapper').on('click', scrollToTop);
+    });
+     
+    function scrollToTop() {
+      verticalOffset = typeof(verticalOffset) != 'undefined' ? verticalOffset : 0;
+      element = $('body');
+      offset = element.offset();
+      offsetTop = offset.top;
+      $('html, body').animate({scrollTop: offsetTop}, 500, 'linear');
+    }
   </script>
 </body>
 </html>
