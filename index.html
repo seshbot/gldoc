@@ -152,11 +152,16 @@
 
   <script type="text/x-handlebars" data-template-name="group">
     <h4>Enum Group {{name}}</h4>
-    <ul class="list-inline version-list">
-      {{#each feature in features}}
-        <li>{{feature.api}} {{feature.number}}</li>
-      {{/each}}
-    </ul>
+
+    <div>
+    {{#each entity in versions}}
+      <div class="btn-group btn-group-xs" role="group">
+        <a href="javascript:void()" class="btn btn-label" role="button">{{entity.api}}</a>
+        <a href="javascript:void()" class="btn btn-default" role="button">{{entity.range}}</a>
+      </div>
+    {{/each}}
+    </div>
+
     <ul class="group">
       {{#each enum in enums}}
         <li><span class="name">{{enum.name}}</span>&nbsp;<span class="value">{{enum.value}}</span></li>
@@ -166,11 +171,15 @@
 
   <script type="text/x-handlebars" data-template-name="command">
     <h4>Command {{name}}</h4>
-    <ul class="list-inline version-list">
-      {{#each feature in features}}
-        <li>{{feature.api}} {{feature.number}}</li>
-      {{/each}}
-    </ul>
+
+    <div>
+    {{#each entity in versions}}
+      <div class="btn-group btn-group-xs" role="group">
+        <a href="javascript:void()" class="btn btn-label" role="button">{{entity.api}}</a>
+        <a href="javascript:void()" class="btn btn-default" role="button">{{entity.range}}</a>
+      </div>
+    {{/each}}
+    </div>
 
     <div class="command">
       <span class="return-type">{{return_type}}</span>

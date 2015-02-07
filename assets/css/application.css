@@ -3,6 +3,8 @@ body {
   padding-top: 70px;
 }
 
+.btn-label { color:#333; background-color: lightgray; border-color: darkgray; }
+
 @media (min-width: 768px) {
   .sidebar {
     position: fixed;

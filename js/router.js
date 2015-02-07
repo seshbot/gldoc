@@ -213,3 +213,38 @@ App.CommandsController = Ember.ArrayController.extend({
     return filtered;
   }.property('@each', 'App.filter.features.@each'),
 });
+
+App.VersionedEntityController = Ember.ObjectController.extend({
+  versions: function() {
+    var featureApi = function(f) { return f.get('api'); };
+    var featureNumber = function(f) { return f.get('number'); };
+
+    var features = this.get('features');
+
+    var featureApis = features.map(featureApi).uniq();
+    featureApis.sort();
+
+    var featuresByApi = [];
+    featureApis.forEach(function(api){
+      var matchesApi = function(f) { return featureApi(f) == api };
+      var apiFeatures = features.filter(matchesApi);
+
+      apiFeatures.sort(function(f1, f2) {
+        var n1 = f1.get('number');
+        var n2 = f2.get('number');
+        return n1 < n2 ? -1 : n1 > n2 ? 1 : 0;
+      });
+
+      var first = apiFeatures[0];
+      var last = apiFeatures[apiFeatures.length - 1];
+      var rangeStr = '' + first.get('number');
+      if (first != last) rangeStr += ' - ' + last.get('number');
+      featuresByApi.push({api: api, features: apiFeatures, first: first, last: last, range: rangeStr });
+    });
+    return featuresByApi;
+  }.property('features.@each'),
+});
+
+
+App.CommandController = App.VersionedEntityController.extend();
+App.GroupController = App.VersionedEntityController.extend();
