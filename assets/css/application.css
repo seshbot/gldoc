@@ -25,6 +25,7 @@ ul.param-list { list-style-type: none; }
 
 ul.group { font-family: monospace; list-style-type: none; padding-left: 0; max-width: 25em;}
 ul.group li .name { color: #e66170; }
+ul.group li .disabled { color: gray; text-decoration: line-through; }
 ul.group li .value { color: gray; float:right;}
 
 

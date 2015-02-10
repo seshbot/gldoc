@@ -183,6 +183,10 @@
     </div>
   </script>
 
+  <script type="text/x-handlebars" data-template-name="enum">
+  <span {{bind-attr class=':name enabled::disabled'}} class="name">{{name}}</span>&nbsp;<span class="value">{{value}}</span>
+  </script>
+
   <script type="text/x-handlebars" data-template-name="group">
     <h4>Enum Group {{name}}</h4>
 
@@ -197,7 +201,7 @@
 
     <ul class="group">
       {{#each enum in enums}}
-        <li><span class="name">{{enum.name}}</span>&nbsp;<span class="value">{{enum.value}}</span></li>
+        <li>{{render "enum" enum}}</li>
       {{/each}}
     </ul>
   </script>

@@ -212,6 +212,24 @@ def parseXmlCommands(xml):
   commands = [CommandXml(c) for cs in xml.iter("commands") for c in cs.iter("command")]
   return sorted(commands)
 
+#
+# patching entities
+#
+def patchEntities(origEntities, patchEntities):
+  if len(patchEntities) == 0:
+    return origEntities
+
+  newEntities = origEntities
+  newEntityIdxByName = {e.name: idx for idx, e in enumerate(newEntities)}
+
+  for e in patchEntities:
+    if e.name in newEntityIdxByName:
+      # replace existing entity
+      newEntities[newEntityIdxByName[e.name]] = e
+    else:
+      newEntities.append(e)
+
+  return newEntities
 
 # TODO enum rules:
 # (1) no comment attribute exists for <enum> starting with "Not an API enum. ..."

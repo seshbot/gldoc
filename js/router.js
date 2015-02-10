@@ -42,6 +42,13 @@ App.Filter = Ember.Object.extend({
     var groupFeatures = c.get('features');
     return groupFeatures.any(hasActiveFeatures);
   },
+  testEnum: function(e) {
+    var features = this.get('features');
+    var hasActiveFeatures = function(f) { return Ember.isEmpty(features) || features.contains(f.get('id')); };
+
+    var enumFeatures = e.get('features');
+    return enumFeatures.any(hasActiveFeatures);
+  },
 });
 
 App.filter = App.Filter.create();
@@ -57,7 +64,8 @@ App.ApplicationRoute = Ember.Route.extend({
       features: this.store.find('feature'),
       groups: this.store.find('group'),
       commands: this.store.find('command'),
-      parameters: this.store.find('parameter')
+      parameters: this.store.find('parameter'),
+      enums: this.store.find('enum'),
     };
   },
 
@@ -94,6 +102,24 @@ App.SearchResultsRoute = Ember.Route.extend({
   },
   serialize: function(query) {
     return {q: query};
+  },
+  resetController: function (controller, isExiting, transition) {
+    this._super();
+    window.scrollTo(0,0);
+  }
+});
+
+App.CommandRoute = Ember.Route.extend({
+  resetController: function (controller, isExiting, transition) {
+    this._super();
+    window.scrollTo(0,0);
+  }
+});
+
+App.GroupRoute = Ember.Route.extend({
+  resetController: function (controller, isExiting, transition) {
+    this._super();
+    window.scrollTo(0,0);
   }
 });
 
@@ -178,15 +204,12 @@ App.FeaturesController = Ember.ArrayController.extend({
 });
 
 App.GroupsController = Ember.ArrayController.extend({
-  needs: ['features'],
-
   filteredCount: 0,
 
   filteredContent: function() {
     var content = this.get('model');
     if (!content) { return content; }
 
-    var features = this.get('controllers.features');
     var featureFilter = function(entity) { return App.filter.testGroup(entity); };
 
     var filtered = content.filter(featureFilter);
@@ -201,8 +224,6 @@ App.GroupsController = Ember.ArrayController.extend({
 });
 
 App.CommandsController = Ember.ArrayController.extend({
-  needs: ['features'],
-
   // sortProperties: ['name', 'artist'],
   // sortAscending: true // false for descending
 
@@ -212,7 +233,6 @@ App.CommandsController = Ember.ArrayController.extend({
     var content = this.get('model');
     if (!content) { return content; }
 
-    var features = this.get('controllers.features');
     var featureFilter = function(entity) { return App.filter.testCommand(entity); };
 
     var filtered = content.filter(featureFilter);
@@ -260,3 +280,14 @@ App.VersionedEntityController = Ember.ObjectController.extend({
 
 App.CommandController = App.VersionedEntityController.extend();
 App.GroupController = App.VersionedEntityController.extend();
+
+
+//
+// Views
+//
+
+App.EnumController = Ember.ObjectController.extend({
+  enabled: function() {
+    return App.filter.testEnum(this.get('model'));
+  }.property('App.filter.features.@each'),
+});

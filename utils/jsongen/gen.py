@@ -13,11 +13,13 @@ import re
 import json
 
 from registry.parsers import *
-from registry.writejson import *
+from registry.model import *
+from registry.serializers import *
 
 import xml.etree.cElementTree as etree
 
 # see also https://github.com/AlexandreFournier/gl-spec-parser
+# see also https://github.com/hpicgs/glbinding
 
 # sys dir(sys)  dir()
 
@@ -53,9 +55,19 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('-p', '--patchfile', help='XML patch file')
   parser.add_argument('-o', '--outputdir', default='.', help='directory into which output files are dumped')
+  parser.add_argument('-j', '--json', action='store_true')
+  parser.add_argument('-c', '--cpp', action='store_true')
+  parser.add_argument('--verify', action='store_true')
+  parser.add_argument('--es2only', action='store_true')
   parser.add_argument('regfile', help='XML registry file')
 
   args = parser.parse_args()
+
+  genJson = args.json
+  genCpp = args.cpp
+  if not genCpp and not genJson:
+    genJson = True
+    genCpp = True
 
   inputfile = args.regfile # os.path.join(os.path.dirname(__file__), 'gl.xml')
   outputpath = args.outputdir
@@ -67,64 +79,142 @@ if __name__ == '__main__':
   xmltree       = etree.parse(inputfile)
   xmlregistry   = xmltree.getroot()
 
-  print '  - parsing features...',
   features = parseXmlFeatures(xmlregistry)
-  print '%d found' % len(features)
+  print '%d features found' % len(features)
 
-  print '  - parsing enums...',
   enums = parseXmlEnums(xmlregistry)
-  print '%d found' % len(enums)
+  print '%d enums found' % len(enums)
 
-  print '  - parsing enum goups...',
   groups = parseXmlGroups(xmlregistry, enums)
-  print '%d found' % len(groups)
+  print '%d groups found' % len(groups)
 
-  print '  - parsing commands...',
   commands = parseXmlCommands(xmlregistry)
-  print '%d found' % len(commands)
+  print '%d commands found' % len(commands)
 
   patchfile = args.patchfile
   if patchfile:
     print 'applying patches from file %s' % patchfile
+    patch_xmltree       = etree.parse(patchfile)
+    patch_xmlregistry   = patch_xmltree.getroot()
 
-  registry = Registry(features, enums, groups, commands)
+    patch_features = parseXmlFeatures(patch_xmlregistry)
+    print '%d features found' % len(patch_features)
 
-  # print 'verifying enum groups are consistent...'
-  # for e in registry.enums:
-  #   if len(e.groups) > 1:
-  #     print '  - enum %s is a member of groups %s' % (e.name, [g.name for g in e.groups])
+    patch_enums = parseXmlEnums(patch_xmlregistry)
+    print '%d enums found' % len(patch_enums)
 
-  # print 'verifying features have sensible enums...'
-  # for f in registry.features:
-  #   enum_names = {e.name for e in f.requiredEnums}
-  #   print '  - feature %s has %s enums' % (f.name, len(enum_names))
-  #   flatten = lambda ll: reduce(lambda a, b: a | b, ll, set())
-  #   expanded_enums = flatten([g.enums for e in f.requiredEnums for g in e.groups])
-  #   expanded_enum_names = {e.name for e in expanded_enums}
-  #   print '               should have %s' % len(expanded_enum_names)
-  #   diff = expanded_enum_names - enum_names
-  #   print '               diff: %s' % diff
+    patch_groups = parseXmlGroups(patch_xmlregistry, patch_enums)
+    print '%d groups found' % len(patch_groups)
+
+    patch_commands = parseXmlCommands(patch_xmlregistry)
+    print '%d commands found' % len(patch_commands)
+
+    features = patchEntities(features, patch_features)
+    enums = patchEntities(enums, patch_enums)
+    groups = patchEntities(groups, patch_groups)
+    commands = patchEntities(commands, patch_commands)
+
+  registry = Registry(features, enums, groups, commands, args.es2only)
+
+  if args.verify:
+
+    #
+    # verify all groups referenced by commands are defined
+    #
+
+    unlinkedgroups = {}
+    for p in registry.coreParameters:
+      shouldgroupname = p.data.groupString
+      actualgroupname = p.group.name if p.group else ''
+      if shouldgroupname and shouldgroupname != actualgroupname:
+        if shouldgroupname not in unlinkedgroups:
+          unlinkedgroups[shouldgroupname] = []
+        unlinkedgroups[shouldgroupname].append(p)
+
+    gles2 = registry.findfeature('gles2', '2.0')
+
+    if len(unlinkedgroups) > 0:
+      print('WARNING: unlinked groups referenced by parameters:')
+
+      commandgroups = {}
+
+      for g, ps in unlinkedgroups.iteritems():
+        paramnames = map(lambda p: '%s:%s' % (p.name, p.type), ps)
+        commandnames = {c.name for p in ps for c in p.commands if gles2 in c.features}
+        for n in commandnames:
+          if n not in commandgroups:
+            commandgroups[n] = set()
+          commandgroups[n].add(g)
+        print('%s (%s)' % (g, ','.join(paramnames)))
+
+      print('\nby command:')
+      groupcommands = {}
+      for g, ps in unlinkedgroups.iteritems():
+        commands = {c for p in ps for c in p.commands if gles2 in c.features}
+        groupcommands[g] = commands
+
+      for g, cs in sorted(groupcommands.iteritems(), key=lambda tup: len(tup[1])):
+        print('%s (%s)' % (g, ','.join([c.name for c in cs])))
+
+      print('\nfrom commands:')
+      for command, groups in sorted(commandgroups.iteritems(), key=lambda tup: len(tup[1])):
+        print('%s (%s)' % (command, ','.join(groups)))
+
+    # print 'verifying enum groups are consistent...'
+    # for e in registry.enums:
+    #   if len(e.groups) > 1:
+    #     print '  - enum %s is a member of groups %s' % (e.name, [g.name for g in e.groups])
+
+    # print 'verifying features have sensible enums...'
+    # for f in registry.features:
+    #   enum_names = {e.name for e in f.requiredEnums}
+    #   print '  - feature %s has %s enums' % (f.name, len(enum_names))
+    #   flatten = lambda ll: reduce(lambda a, b: a | b, ll, set())
+    #   expanded_enums = flatten([g.enums for e in f.requiredEnums for g in e.groups])
+    #   expanded_enum_names = {e.name for e in expanded_enums}
+    #   print '               should have %s' % len(expanded_enum_names)
+    #   diff = expanded_enum_names - enum_names
+    #   print '               diff: %s' % diff
 
   # TODO: extensions
   # TODO: aliases
 
-  # NOTE: we normalise command parameters into another file because some commands are reused many times
-  # e.g., 'GLuint index' is used by 416 commands
+  if genJson:
+    print 'writing js files'
+    writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
+    writeEntitiesToNewFile(registry.coreEnums, os.path.join(outputpath, 'enums.js'), 'GL_REGISTRY_ENUMS')
+    writeEntitiesToNewFile(registry.coreGroups, os.path.join(outputpath, 'groups.js'), 'GL_REGISTRY_GROUPS')
+    writeEntitiesToNewFile(registry.coreCommands, os.path.join(outputpath, 'commands.js'), 'GL_REGISTRY_COMMANDS')
+    writeEntitiesToNewFile(registry.coreParameters, os.path.join(outputpath, 'parameters.js'), 'GL_REGISTRY_PARAMETERS')
 
-  print 'writing js files'
-  writeEntitiesToNewFile(registry.features, os.path.join(outputpath, 'features.js'), 'GL_REGISTRY_FEATURES')
-  writeEntitiesToNewFile(registry.coreEnums, os.path.join(outputpath, 'enums.js'), 'GL_REGISTRY_ENUMS')
-  writeEntitiesToNewFile(registry.coreGroups, os.path.join(outputpath, 'groups.js'), 'GL_REGISTRY_GROUPS')
-  writeEntitiesToNewFile(registry.coreCommands, os.path.join(outputpath, 'commands.js'), 'GL_REGISTRY_COMMANDS')
-  writeEntitiesToNewFile(registry.coreParameters, os.path.join(outputpath, 'parameters.js'), 'GL_REGISTRY_PARAMETERS')
+    # NOTE: we normalise command parameters into another file because some commands are reused many times
+    # e.g., 'GLuint index' is used by 416 commands
 
-  print 'writing json file'
-  fp = open(os.path.join(outputpath, 'data.json'), 'w')
-  writeEntitiesToExistingFile(registry.features, 'features', fp)
-  writeEntitiesToExistingFile(registry.coreEnums, 'enums', fp)
-  writeEntitiesToExistingFile(registry.coreGroups, 'groups', fp)
-  writeEntitiesToExistingFile(registry.coreCommands, 'commands', fp)
-  writeEntitiesToExistingFile(registry.coreParameters, 'parameters', fp)
-  fp.close
+    print 'writing json file'
+    fp = open(os.path.join(outputpath, 'data.json'), 'w')
+    writeEntitiesToExistingFile(registry.features, 'features', fp)
+    writeEntitiesToExistingFile(registry.coreEnums, 'enums', fp)
+    writeEntitiesToExistingFile(registry.coreGroups, 'groups', fp)
+    writeEntitiesToExistingFile(registry.coreCommands, 'commands', fp)
+    writeEntitiesToExistingFile(registry.coreParameters, 'parameters', fp)
+    fp.close
 
-  print 'writing cpp files'
+  if genCpp:
+    filename = os.path.join(outputpath, 'enums.h')
+    print 'writing %s' % filename
+    fp = open(filename, 'w')
+    writeCppEnums(registry.coreGroups, fp)
+    fp.close
+
+    filename = os.path.join(outputpath, 'commands.h')
+    print 'writing %s' % filename
+    fp = open(filename, 'w')
+    writeCppCommandsHeader(registry.coreCommands, fp)
+    fp.close
+
+    filename = os.path.join(outputpath, 'commands.cpp')
+    print 'writing %s' % filename
+    fp = open(filename, 'w')
+    writeCppCommandsCpp(registry.coreCommands, fp)
+    fp.close
+
